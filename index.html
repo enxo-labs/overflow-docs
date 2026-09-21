@@ -1,0 +1,1099 @@
+<title>Overflow Design System</title>
+<meta name="description" content="Documentação do design system da Overflow Software — tokens, tipografia e componentes React, num layout inspirado em Material Design.">
+<style>
+  :root{
+    color-scheme: light;
+    --brand-50:#EDF1FA;--brand-100:#C8D3EF;--brand-200:#9DAEE0;--brand-300:#6C84CC;--brand-400:#4A6BBE;
+    --brand-500:#2E5CA7;--brand-600:#244A8F;--brand-700:#1B3B8D;--brand-800:#142C6B;--brand-900:#0D1D47;
+    --neutral-0:#FFFFFF;--neutral-50:#F6F7F9;--neutral-100:#E8EAEF;--neutral-200:#DDE0E7;--neutral-300:#C9CDD8;
+    --neutral-500:#8B91A3;--neutral-600:#5A6072;--neutral-800:#2E3340;--neutral-900:#14161C;
+    --success:#16A34A;--success-dark:#15803D;--success-bg:#E7F6EC;--success-text:#166534;
+    --warning:#F59E0B;--warning-dark:#B45309;--warning-bg:#FEF5E1;--warning-text:#633806;
+    --error:#DC2626;--error-dark:#B91C1C;--error-bg:#FDECEC;--error-text:#791F1F;
+    --bg:#F6F7F9;--surface:#FFFFFF;--surface-tint:#EDF1FA;--border:#DDE0E7;--border-strong:#C9CDD8;
+    --text:#2E3340;--text-muted:#5A6072;--text-subtle:#8B91A3;--accent:var(--brand-700);--link:var(--brand-500);
+    --space-1:4px;--space-2:8px;--space-3:12px;--space-4:16px;--space-5:24px;--space-6:32px;--space-7:48px;--space-8:64px;
+    --radius-sm:6px;--radius:8px;--radius-lg:12px;--radius-xl:20px;--radius-pill:999px;
+    --shadow-1:0 1px 2px rgba(13,29,71,.08),0 1px 3px rgba(13,29,71,.06);
+    --shadow-2:0 2px 6px rgba(13,29,71,.10),0 4px 12px rgba(13,29,71,.06);
+    --shadow-3:0 8px 24px rgba(13,29,71,.14),0 2px 8px rgba(13,29,71,.08);
+    --focus-ring:0 0 0 2px #FFFFFF, 0 0 0 4px #2E5CA7;
+    --font-sans:"Inter","Segoe UI",system-ui,-apple-system,sans-serif;
+    --font-mono:"IBM Plex Mono","SFMono-Regular",Menlo,Consolas,monospace;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      color-scheme: dark;
+      --bg:#0F1117;--surface:#1A1D26;--surface-tint:#171C2E;--border:#2A2E3A;--border-strong:#3A3F4D;
+      --text:#E8EAEF;--text-muted:#A3A9B8;--text-subtle:#8B91A3;--accent:var(--brand-200);--link:var(--brand-200);
+      --success-bg:#12291B;--warning-bg:#2E2208;--error-bg:#2B1212;
+      --success-text:#86E0A8;--warning-text:#F5C56B;--error-text:#F09595;
+      --focus-ring:0 0 0 2px #0F1117, 0 0 0 4px #6C84CC;
+      --shadow-1:0 1px 2px rgba(0,0,0,.4);--shadow-2:0 4px 12px rgba(0,0,0,.45);--shadow-3:0 10px 28px rgba(0,0,0,.5);
+    }
+  }
+  :root[data-theme="dark"]{
+    color-scheme: dark;
+    --bg:#0F1117;--surface:#1A1D26;--surface-tint:#171C2E;--border:#2A2E3A;--border-strong:#3A3F4D;
+    --text:#E8EAEF;--text-muted:#A3A9B8;--text-subtle:#8B91A3;--accent:var(--brand-200);--link:var(--brand-200);
+    --success-bg:#12291B;--warning-bg:#2E2208;--error-bg:#2B1212;
+    --success-text:#86E0A8;--warning-text:#F5C56B;--error-text:#F09595;
+    --focus-ring:0 0 0 2px #0F1117, 0 0 0 4px #6C84CC;
+    --shadow-1:0 1px 2px rgba(0,0,0,.4);--shadow-2:0 4px 12px rgba(0,0,0,.45);--shadow-3:0 10px 28px rgba(0,0,0,.5);
+  }
+
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:var(--font-sans);
+    -webkit-font-smoothing:antialiased;
+    padding-bottom:var(--space-8);
+  }
+  a{color:var(--link)}
+  ::selection{background:var(--brand-200);color:var(--brand-900)}
+
+  .wrap{max-width:1080px;margin:0 auto;padding-inline:var(--space-5)}
+  img{max-width:100%;display:block}
+
+  /* Top app bar */
+  .appbar{
+    position:sticky;top:0;z-index:20;
+    background:color-mix(in srgb, var(--surface) 88%, transparent);
+    backdrop-filter: blur(10px) saturate(1.2);
+    border-bottom:1px solid var(--border);
+  }
+  .appbar-inner{max-width:1080px;margin:0 auto;padding:var(--space-3) var(--space-5);display:flex;align-items:center;gap:var(--space-4)}
+  .appbar-brand{display:flex;align-items:center;gap:var(--space-2);font-weight:500;font-size:15px;text-decoration:none;color:var(--text)}
+  .appbar-brand img{height:22px;width:auto}
+  .appbar-nav{display:flex;gap:var(--space-1);margin-left:var(--space-3);flex-wrap:wrap;flex:1}
+  .appbar-nav a{
+    font-size:13px;color:var(--text-muted);text-decoration:none;padding:6px 12px;border-radius:var(--radius-pill);
+    transition:background-color 150ms ease,color 150ms ease;
+  }
+  .appbar-nav a:hover{background:var(--surface-tint);color:var(--text)}
+  .theme-toggle{
+    display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 12px;border-radius:var(--radius-pill);
+    border:1px solid var(--border-strong);background:var(--surface);color:var(--text);font-size:12px;font-family:inherit;
+    cursor:pointer;flex-shrink:0;
+  }
+  .theme-toggle:hover{background:var(--surface-tint)}
+
+  /* Hero */
+  .hero{padding:var(--space-8) 0 var(--space-6)}
+  .hero-grid{display:flex;align-items:center;gap:var(--space-7);flex-wrap:wrap}
+  .hero-mark{width:120px;height:120px;flex-shrink:0}
+  .hero h1{font-size:44px;line-height:1.05;letter-spacing:-.01em;font-weight:500;margin:0 0 var(--space-2)}
+  .hero p.lead{font-size:17px;line-height:1.6;color:var(--text-muted);max-width:56ch;margin:0 0 var(--space-4)}
+  .chips{display:flex;gap:var(--space-2);flex-wrap:wrap}
+  .chip{
+    display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 14px;border-radius:var(--radius-pill);
+    background:var(--surface-tint);color:var(--accent);font-size:13px;font-weight:500;text-decoration:none;
+    border:1px solid transparent;transition:background-color 150ms ease;
+  }
+  .chip:hover{background:var(--brand-100)}
+  .chip.outline{background:transparent;border-color:var(--border-strong);color:var(--text-muted)}
+
+  /* Section shell — Material-style elevated surface */
+  section.panel{margin-top:var(--space-6)}
+  .panel-head{margin-bottom:var(--space-4)}
+  .eyebrow{font-size:12px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--brand-500)}
+  :root[data-theme="dark"] .eyebrow{color:var(--brand-300)}
+  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .eyebrow{color:var(--brand-300)}}
+  .panel-head h2{font-size:26px;font-weight:500;margin:4px 0 var(--space-2);letter-spacing:-.01em}
+  .panel-head p{font-size:14px;color:var(--text-muted);max-width:64ch;line-height:1.6;margin:0}
+
+  .surface{
+    background:var(--surface);
+    border-radius:var(--radius-xl);
+    border:1px solid var(--border);
+    box-shadow:var(--shadow-1);
+    padding:var(--space-5);
+  }
+
+  /* Color */
+  .ramp{display:grid;grid-template-columns:repeat(10,1fr);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-1)}
+  .swatch{aspect-ratio:1;display:flex;align-items:flex-end;padding:8px;font-size:10px;font-family:var(--font-mono)}
+  .swatch b{display:block;font-family:var(--font-sans);font-weight:500;font-size:11px}
+  .status-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:var(--space-3);margin-top:var(--space-4)}
+  .status-card{border-radius:var(--radius-lg);padding:var(--space-4);border:1px solid var(--border)}
+  .status-card .dot{width:12px;height:12px;border-radius:50%;display:inline-block;margin-right:6px;vertical-align:-1px}
+  .alias-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:var(--space-3);margin-top:var(--space-4)}
+  .alias-card{display:flex;align-items:center;gap:10px;border:1px solid var(--border);border-radius:var(--radius);padding:10px 12px;font-size:12px}
+  .alias-swatch{width:28px;height:28px;border-radius:var(--radius-sm);border:1px solid var(--border-strong);flex-shrink:0}
+
+  /* Type */
+  .type-row{display:flex;align-items:baseline;gap:var(--space-4);padding:var(--space-3) 0;border-bottom:1px solid var(--border)}
+  .type-row:last-child{border-bottom:none}
+  .type-row .meta{width:150px;flex-shrink:0;font-size:12px;font-family:var(--font-mono);color:var(--text-subtle)}
+  .type-xs{font-size:12px}.type-sm{font-size:13px}.type-md{font-size:14px;font-weight:500}.type-lg{font-size:16px;font-weight:500}.type-xl{font-size:20px;font-weight:500}
+
+  /* Scales */
+  .scale-row{display:flex;align-items:center;gap:var(--space-4);padding:10px 0}
+  .scale-row .meta{width:110px;flex-shrink:0;font-size:12px;font-family:var(--font-mono);color:var(--text-subtle)}
+  .bar{height:20px;background:var(--brand-500);border-radius:4px}
+  .radius-demo{width:56px;height:56px;background:var(--brand-100);border:2px solid var(--brand-500)}
+
+  /* Component demo cards */
+  .demo-card{border:1px solid var(--border);border-radius:var(--radius-lg);padding:var(--space-5);margin-top:var(--space-4)}
+  .demo-label{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.05em;color:var(--text-subtle);margin:0 0 var(--space-3)}
+  .demo-row{display:flex;flex-wrap:wrap;align-items:center;gap:var(--space-3);margin-bottom:var(--space-3)}
+  .demo-row:last-child{margin-bottom:0}
+  .demo-col{display:flex;flex-direction:column;gap:var(--space-3)}
+  code, .code{font-family:var(--font-mono);font-size:12px;background:var(--surface-tint);color:var(--brand-700);padding:2px 6px;border-radius:4px}
+  :root[data-theme="dark"] code, :root[data-theme="dark"] .code{color:var(--brand-200)}
+
+  /* Logo section */
+  .logo-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:var(--space-4)}
+  .logo-tile{border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden}
+  .logo-tile .swatch-bg{padding:var(--space-5);display:flex;align-items:center;justify-content:center;min-height:120px}
+  .logo-tile .cap{padding:10px 14px;font-size:12px;color:var(--text-muted);border-top:1px solid var(--border)}
+  .logo-tile img{max-height:56px;width:auto;max-width:80%}
+
+  /* Checklist */
+  ul.check{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+  ul.check li{display:flex;gap:10px;font-size:14px;line-height:1.5;color:var(--text)}
+  ul.check li svg{flex-shrink:0;margin-top:3px;color:var(--success)}
+
+  footer{margin-top:var(--space-8);padding-top:var(--space-5);border-top:1px solid var(--border);font-size:12px;color:var(--text-subtle)}
+
+  @media (max-width:680px){
+    .hero h1{font-size:32px}
+    .ramp{grid-template-columns:repeat(5,1fr)}
+    .appbar-nav{display:none}
+  }
+
+  /* ------------------------------------------------------------------------
+     Overflow components — copied verbatim from resources/css/overflow-design-system.css
+     ------------------------------------------------------------------------ */
+  .of-btn{
+    display:inline-flex;align-items:center;justify-content:center;gap:var(--space-2);
+    height:40px;padding:0 18px;border:1px solid transparent;border-radius:var(--radius);
+    font-family:var(--font-sans);font-size:14px;font-weight:500;line-height:1;
+    text-decoration:none;white-space:nowrap;cursor:pointer;
+    transition:background-color 150ms ease,border-color 150ms ease,color 150ms ease;
+  }
+  .of-btn:focus-visible{outline:none;box-shadow:var(--focus-ring)}
+  .of-btn:active:not(:disabled){transform:translateY(1px)}
+  .of-btn--primary{background-color:var(--brand-700);color:var(--neutral-0)}
+  .of-btn--primary:hover:not(:disabled){background-color:var(--brand-800)}
+  .of-btn--primary:active:not(:disabled){background-color:var(--brand-900)}
+  .of-btn--secondary{background-color:transparent;border-color:var(--brand-700);color:var(--brand-700)}
+  .of-btn--secondary:hover:not(:disabled){background-color:var(--brand-50)}
+  .of-btn--secondary:active:not(:disabled){background-color:var(--brand-100)}
+  .of-btn--ghost{background-color:transparent;color:var(--brand-500)}
+  .of-btn--ghost:hover:not(:disabled){background-color:var(--brand-50);color:var(--brand-700)}
+  .of-btn--ghost:active:not(:disabled){background-color:var(--brand-100)}
+  .of-btn--danger{background-color:var(--error);color:var(--neutral-0)}
+  .of-btn--danger:hover:not(:disabled){background-color:var(--error-dark)}
+  .of-btn--danger:focus-visible{box-shadow:0 0 0 2px var(--neutral-0),0 0 0 4px var(--error)}
+  .of-btn:disabled,.of-btn[aria-disabled="true"]{
+    background-color:var(--neutral-100);border-color:transparent;color:var(--neutral-500);
+    cursor:not-allowed;transform:none;
+  }
+  .of-btn--sm{height:32px;padding:0 12px;font-size:13px;border-radius:var(--radius-sm)}
+  .of-btn--lg{height:48px;padding:0 24px;font-size:16px}
+  .of-btn--block{width:100%}
+  .of-btn--icon{width:40px;padding:0}
+  .of-btn--icon.of-btn--sm{width:32px}
+  .of-btn--icon.of-btn--lg{width:48px}
+  .of-btn--loading{pointer-events:none;position:relative;color:transparent}
+  .of-btn--loading::after{
+    content:"";position:absolute;width:16px;height:16px;border:2px solid currentColor;
+    border-top-color:transparent;border-radius:50%;color:var(--neutral-0);
+    animation:of-spin 700ms linear infinite;
+  }
+  .of-btn--secondary.of-btn--loading::after,.of-btn--ghost.of-btn--loading::after{color:var(--brand-700)}
+  @keyframes of-spin{to{transform:rotate(360deg)}}
+  :root[data-theme="dark"] .of-btn--primary{background-color:var(--brand-500)}
+  :root[data-theme="dark"] .of-btn--primary:hover:not(:disabled){background-color:var(--brand-400)}
+  :root[data-theme="dark"] .of-btn--secondary,:root[data-theme="dark"] .of-btn--ghost{color:var(--brand-200)}
+  :root[data-theme="dark"] .of-btn--secondary{border-color:var(--brand-400)}
+  :root[data-theme="dark"] .of-btn--secondary:hover:not(:disabled),
+  :root[data-theme="dark"] .of-btn--ghost:hover:not(:disabled){background-color:rgba(46,92,167,.18);color:var(--brand-100)}
+  :root[data-theme="dark"] .of-btn:disabled{background-color:#23262F;color:#5A6072}
+
+  .of-alert{
+    display:flex;align-items:flex-start;gap:var(--space-3);padding:var(--space-3) var(--space-4);
+    border-left:4px solid;border-radius:0;font-family:var(--font-sans);font-size:13px;line-height:1.5;
+  }
+  .of-alert__icon{flex-shrink:0;width:18px;height:18px;margin-top:1px}
+  .of-alert__body{flex:1;min-width:0}
+  .of-alert__title{margin:0;font-size:14px;font-weight:500}
+  .of-alert__text{margin:2px 0 0;opacity:.9}
+  .of-alert__close{flex-shrink:0;background:none;border:none;padding:2px;color:inherit;opacity:.6;cursor:pointer;border-radius:var(--radius-sm)}
+  .of-alert__close:hover{opacity:1}
+  .of-alert--info{background-color:var(--brand-50);border-color:var(--brand-500);color:var(--brand-600)}
+  .of-alert--info .of-alert__title{color:var(--brand-800)}
+  .of-alert--info .of-alert__icon{color:var(--brand-500)}
+  .of-alert--success{background-color:var(--success-bg);border-color:var(--success);color:var(--success-text)}
+  .of-alert--success .of-alert__title{color:#14532D}
+  .of-alert--success .of-alert__icon{color:var(--success-dark)}
+  .of-alert--warning{background-color:var(--warning-bg);border-color:var(--warning);color:var(--warning-text)}
+  .of-alert--warning .of-alert__title{color:#412402}
+  .of-alert--warning .of-alert__icon{color:var(--warning-dark)}
+  .of-alert--error{background-color:var(--error-bg);border-color:var(--error);color:var(--error-text)}
+  .of-alert--error .of-alert__title{color:#501313}
+  .of-alert--error .of-alert__icon{color:var(--error-dark)}
+  .of-toast{background-color:var(--surface);border:1px solid var(--border);border-left:4px solid;border-radius:var(--radius);box-shadow:var(--shadow-3);max-width:380px}
+  .of-toast.of-alert--info{border-left-color:var(--brand-500)}
+  .of-toast.of-alert--success{border-left-color:var(--success)}
+  .of-toast.of-alert--warning{border-left-color:var(--warning)}
+  .of-toast.of-alert--error{border-left-color:var(--error)}
+  :root[data-theme="dark"] .of-alert--info{background-color:#131C33;color:var(--brand-200)}
+  :root[data-theme="dark"] .of-alert--info .of-alert__title{color:var(--brand-100)}
+  :root[data-theme="dark"] .of-alert--success .of-alert__title{color:#B7EFCB}
+  :root[data-theme="dark"] .of-alert--warning .of-alert__title{color:#FBDCA0}
+  :root[data-theme="dark"] .of-alert--error .of-alert__title{color:#F7C1C1}
+
+  .of-badge{
+    display:inline-flex;align-items:center;gap:var(--space-1);height:22px;padding:0 var(--space-2);
+    border-radius:11px;font-family:var(--font-sans);font-size:12px;font-weight:500;
+  }
+  .of-badge--neutral{background-color:var(--neutral-100);color:var(--neutral-800)}
+  .of-badge--brand{background-color:var(--brand-50);color:var(--brand-800)}
+  .of-badge--success{background-color:var(--success-bg);color:var(--success-text)}
+  .of-badge--warning{background-color:var(--warning-bg);color:var(--warning-text)}
+  .of-badge--error{background-color:var(--error-bg);color:var(--error-text)}
+
+  @media (prefers-reduced-motion: reduce){
+    .of-btn,.of-alert__close{transition:none}
+    .of-btn--loading::after{animation-duration:2s}
+    .of-btn:active:not(:disabled){transform:none}
+  }
+
+  /* --------------------------------------------------------------------
+     Card
+     -------------------------------------------------------------------- */
+  .of-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-1)}
+  .of-card__img{width:100%;aspect-ratio:16/9;object-fit:cover;display:block;background:var(--surface-tint)}
+  .of-card__body{padding:var(--space-4)}
+  .of-card__title{margin:0 0 4px;font-size:16px;font-weight:500;color:var(--text)}
+  .of-card__text{margin:0;font-size:13px;line-height:1.55;color:var(--text-muted)}
+  .of-card__footer{padding:var(--space-3) var(--space-4);border-top:1px solid var(--border);display:flex;gap:var(--space-2);align-items:center}
+
+  /* --------------------------------------------------------------------
+     Form controls
+     -------------------------------------------------------------------- */
+  .of-field{display:flex;flex-direction:column;gap:6px}
+  .of-label{font-size:13px;font-weight:500;color:var(--text)}
+  .of-help{font-size:12px;color:var(--text-muted)}
+  .of-help--error{color:var(--error-text)}
+  .of-input,.of-textarea,.of-select{
+    height:40px;padding:0 var(--space-3);border:1px solid var(--border-strong);border-radius:var(--radius);
+    background:var(--surface);color:var(--text);font-family:var(--font-sans);font-size:14px;
+    transition:border-color 150ms ease,box-shadow 150ms ease;width:100%;
+  }
+  .of-textarea{height:auto;min-height:88px;padding:10px var(--space-3);resize:vertical;line-height:1.5}
+  .of-select{appearance:none;-webkit-appearance:none;background-color:var(--surface);background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'><path d='M1 1l5 5 5-5' stroke='%235A6072' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>");background-repeat:no-repeat;background-position:right 12px center;background-size:11px 7px;padding-right:32px}
+  .of-input:hover,.of-textarea:hover,.of-select:hover{border-color:var(--neutral-500)}
+  .of-input:focus,.of-textarea:focus,.of-select:focus{outline:none;border-color:var(--brand-500);box-shadow:0 0 0 3px var(--brand-100)}
+  :root[data-theme="dark"] .of-input:focus,:root[data-theme="dark"] .of-textarea:focus,:root[data-theme="dark"] .of-select:focus{box-shadow:0 0 0 3px rgba(46,92,167,.35)}
+  .of-field--invalid .of-input,.of-field--invalid .of-textarea,.of-field--invalid .of-select{border-color:var(--error)}
+  .of-field--invalid .of-input:focus,.of-field--invalid .of-textarea:focus{box-shadow:0 0 0 3px var(--error-bg)}
+  .of-input::placeholder,.of-textarea::placeholder{color:var(--text-subtle)}
+  .of-input:disabled,.of-select:disabled,.of-textarea:disabled{background:var(--neutral-100);color:var(--neutral-500);cursor:not-allowed}
+
+  .of-check{display:inline-flex;align-items:center;gap:8px;font-size:13px;color:var(--text);cursor:pointer;user-select:none}
+  .of-check input{position:absolute;opacity:0;width:18px;height:18px;margin:0;cursor:pointer}
+  .of-check__box{width:18px;height:18px;border:1.5px solid var(--border-strong);background:var(--surface);flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;transition:background-color 150ms ease,border-color 150ms ease}
+  .of-check--checkbox .of-check__box{border-radius:5px}
+  .of-check--radio .of-check__box{border-radius:50%}
+  .of-check input:checked ~ .of-check__box{background:var(--brand-700);border-color:var(--brand-700)}
+  .of-check--checkbox .of-check__box svg{opacity:0;transform:scale(.5);transition:opacity 120ms ease,transform 120ms ease}
+  .of-check input:checked ~ .of-check__box svg{opacity:1;transform:scale(1)}
+  .of-check--radio .of-check__box::after{content:"";width:8px;height:8px;border-radius:50%;background:var(--neutral-0);opacity:0;transform:scale(.4);transition:opacity 120ms ease,transform 120ms ease}
+  .of-check--radio input:checked ~ .of-check__box::after{opacity:1;transform:scale(1)}
+  .of-check input:focus-visible ~ .of-check__box{box-shadow:var(--focus-ring)}
+
+  .of-switch{display:inline-flex;align-items:center;gap:10px;font-size:13px;color:var(--text);cursor:pointer;user-select:none}
+  .of-switch input{position:absolute;opacity:0;width:40px;height:22px;margin:0;cursor:pointer}
+  .of-switch__track{width:40px;height:22px;border-radius:var(--radius-pill);background:var(--neutral-300);position:relative;flex-shrink:0;transition:background-color 150ms ease}
+  .of-switch__thumb{position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:50%;background:var(--neutral-0);box-shadow:var(--shadow-1);transition:transform 150ms ease}
+  .of-switch input:checked ~ .of-switch__track{background:var(--brand-700)}
+  .of-switch input:checked ~ .of-switch__track .of-switch__thumb{transform:translateX(18px)}
+  .of-switch input:focus-visible ~ .of-switch__track{box-shadow:var(--focus-ring)}
+
+  /* --------------------------------------------------------------------
+     Navbar
+     -------------------------------------------------------------------- */
+  .of-navbar{display:flex;align-items:center;gap:var(--space-5);height:56px;padding:0 var(--space-4);background:var(--brand-700);border-radius:var(--radius-lg)}
+  .of-navbar__brand{color:var(--neutral-0);font-weight:500;font-size:15px;display:flex;align-items:center;gap:8px}
+  .of-navbar__nav{display:flex;gap:4px;flex:1}
+  .of-navbar__link{color:var(--brand-100);font-size:13px;text-decoration:none;padding:8px 12px;border-radius:var(--radius-sm);transition:background-color 150ms ease,color 150ms ease}
+  .of-navbar__link:hover{background:rgba(255,255,255,.1);color:var(--neutral-0)}
+  .of-navbar__link--active{background:rgba(255,255,255,.14);color:var(--neutral-0)}
+
+  /* --------------------------------------------------------------------
+     Tabs
+     -------------------------------------------------------------------- */
+  .of-tabs__list{display:flex;gap:var(--space-4);border-bottom:1px solid var(--border)}
+  .of-tabs__tab{background:none;border:none;padding:10px 2px;margin-bottom:-1px;font-family:var(--font-sans);font-size:13px;font-weight:500;color:var(--text-muted);border-bottom:2px solid transparent;cursor:pointer;transition:color 150ms ease,border-color 150ms ease}
+  .of-tabs__tab:hover{color:var(--text)}
+  .of-tabs__tab[aria-selected="true"]{color:var(--brand-700);border-bottom-color:var(--brand-700)}
+  :root[data-theme="dark"] .of-tabs__tab[aria-selected="true"]{color:var(--brand-200);border-bottom-color:var(--brand-200)}
+  .of-tabs__panel{padding-top:var(--space-4);font-size:13px;color:var(--text-muted);line-height:1.6}
+
+  /* --------------------------------------------------------------------
+     Accordion
+     -------------------------------------------------------------------- */
+  .of-accordion{border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden}
+  .of-accordion__item + .of-accordion__item{border-top:1px solid var(--border)}
+  .of-accordion__trigger{width:100%;display:flex;align-items:center;justify-content:space-between;gap:var(--space-3);background:var(--surface);border:none;padding:14px var(--space-4);font-family:var(--font-sans);font-size:14px;font-weight:500;color:var(--text);cursor:pointer;text-align:left}
+  .of-accordion__trigger:hover{background:var(--surface-tint)}
+  .of-accordion__chevron{transition:transform 150ms ease;flex-shrink:0;color:var(--text-muted)}
+  .of-accordion__trigger[aria-expanded="true"] .of-accordion__chevron{transform:rotate(180deg)}
+  .of-accordion__panel{padding:0 var(--space-4) 14px;font-size:13px;color:var(--text-muted);line-height:1.6}
+
+  /* --------------------------------------------------------------------
+     Modal
+     -------------------------------------------------------------------- */
+  .of-modal-backdrop{position:absolute;inset:0;background:rgba(13,29,71,.45);display:flex;align-items:center;justify-content:center;padding:var(--space-5);border-radius:var(--radius-lg)}
+  .of-modal{width:100%;max-width:380px;background:var(--surface);border-radius:var(--radius-lg);box-shadow:var(--shadow-3);overflow:hidden}
+  .of-modal__header{display:flex;align-items:center;justify-content:space-between;padding:var(--space-4);border-bottom:1px solid var(--border)}
+  .of-modal__title{margin:0;font-size:15px;font-weight:500}
+  .of-modal__body{padding:var(--space-4);font-size:13px;color:var(--text-muted);line-height:1.6}
+  .of-modal__footer{padding:var(--space-3) var(--space-4);border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:var(--space-2)}
+
+  /* --------------------------------------------------------------------
+     Dropdown
+     -------------------------------------------------------------------- */
+  .of-dropdown{position:relative;display:inline-block}
+  .of-dropdown__menu{position:absolute;top:calc(100% + 6px);left:0;min-width:190px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow-2);padding:6px;z-index:5}
+  .of-dropdown__item{display:flex;align-items:center;gap:8px;width:100%;background:none;border:none;padding:8px 10px;border-radius:var(--radius-sm);font-family:var(--font-sans);font-size:13px;color:var(--text);text-align:left;cursor:pointer}
+  .of-dropdown__item:hover{background:var(--surface-tint)}
+  .of-dropdown__item--danger{color:var(--error-text)}
+  .of-dropdown__divider{height:1px;background:var(--border);margin:6px -6px}
+
+  /* --------------------------------------------------------------------
+     Tooltip (CSS-only)
+     -------------------------------------------------------------------- */
+  .of-tooltip{position:relative;display:inline-flex}
+  .of-tooltip__bubble{
+    position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%) translateY(2px);
+    background:var(--neutral-900);color:var(--neutral-0);font-size:12px;padding:6px 10px;border-radius:var(--radius-sm);
+    white-space:nowrap;opacity:0;pointer-events:none;transition:opacity 120ms ease,transform 120ms ease;box-shadow:var(--shadow-2);
+  }
+  .of-tooltip__bubble::after{content:"";position:absolute;top:100%;left:50%;transform:translateX(-50%);border:5px solid transparent;border-top-color:var(--neutral-900)}
+  .of-tooltip:hover .of-tooltip__bubble,.of-tooltip:focus-within .of-tooltip__bubble{opacity:1;transform:translateX(-50%) translateY(0)}
+
+  /* --------------------------------------------------------------------
+     Table
+     -------------------------------------------------------------------- */
+  .of-table{width:100%;border-collapse:collapse;font-size:13px}
+  .of-table th{text-align:left;font-weight:500;color:var(--text-muted);font-size:12px;text-transform:uppercase;letter-spacing:.04em;padding:10px 12px;border-bottom:1px solid var(--border-strong)}
+  .of-table td{padding:12px;border-bottom:1px solid var(--border);color:var(--text)}
+  .of-table tbody tr:last-child td{border-bottom:none}
+  .of-table tbody tr:hover td{background:var(--surface-tint)}
+  .of-table--striped tbody tr:nth-child(even) td{background:var(--surface-tint)}
+
+  /* --------------------------------------------------------------------
+     Pagination
+     -------------------------------------------------------------------- */
+  .of-pagination{display:flex;gap:4px;list-style:none;margin:0;padding:0}
+  .of-pagination__link{display:inline-flex;align-items:center;justify-content:center;min-width:32px;height:32px;padding:0 8px;border-radius:var(--radius-sm);font-size:13px;color:var(--text-muted);text-decoration:none;border:1px solid transparent;cursor:pointer;background:none;font-family:inherit;transition:background-color 150ms ease,color 150ms ease}
+  .of-pagination__link:hover{background:var(--surface-tint);color:var(--text)}
+  .of-pagination__link--active{background:var(--brand-700);color:var(--neutral-0)}
+  .of-pagination__link--active:hover{background:var(--brand-700)}
+  .of-pagination__link:disabled{color:var(--neutral-300);cursor:not-allowed}
+  .of-pagination__link:disabled:hover{background:none}
+
+  /* --------------------------------------------------------------------
+     Breadcrumb
+     -------------------------------------------------------------------- */
+  .of-breadcrumb{display:flex;align-items:center;gap:6px;list-style:none;margin:0;padding:0;font-size:13px}
+  .of-breadcrumb li{display:flex;align-items:center;gap:6px}
+  .of-breadcrumb li:not(:last-child)::after{content:"/";color:var(--text-subtle)}
+  .of-breadcrumb a{color:var(--text-muted);text-decoration:none}
+  .of-breadcrumb a:hover{color:var(--link);text-decoration:underline}
+  .of-breadcrumb li:last-child{color:var(--text);font-weight:500}
+
+  /* --------------------------------------------------------------------
+     Progress
+     -------------------------------------------------------------------- */
+  .of-progress{height:8px;border-radius:var(--radius-pill);background:var(--neutral-100);overflow:hidden}
+  .of-progress__bar{height:100%;border-radius:var(--radius-pill);background:var(--brand-700);transition:width 300ms ease}
+  .of-progress__bar--success{background:var(--success)}
+  .of-progress__bar--warning{background:var(--warning)}
+  .of-progress__bar--error{background:var(--error)}
+
+  /* --------------------------------------------------------------------
+     Spinner
+     -------------------------------------------------------------------- */
+  .of-spinner{display:inline-block;border-radius:50%;border:2.5px solid var(--brand-100);border-top-color:var(--brand-700);animation:of-spin 700ms linear infinite}
+  .of-spinner--sm{width:16px;height:16px;border-width:2px}
+  .of-spinner--md{width:24px;height:24px}
+  .of-spinner--lg{width:36px;height:36px;border-width:3px}
+
+  /* --------------------------------------------------------------------
+     List group
+     -------------------------------------------------------------------- */
+  .of-list-group{border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden}
+  .of-list-group__item{display:flex;align-items:center;gap:10px;padding:12px var(--space-4);font-size:13px;color:var(--text);background:var(--surface)}
+  .of-list-group__item + .of-list-group__item{border-top:1px solid var(--border)}
+  .of-list-group__item--active{background:var(--brand-50);color:var(--brand-800);font-weight:500}
+  :root[data-theme="dark"] .of-list-group__item--active{background:rgba(46,92,167,.16);color:var(--brand-100)}
+  a.of-list-group__item{text-decoration:none;cursor:pointer}
+  a.of-list-group__item:hover{background:var(--surface-tint)}
+
+  /* --------------------------------------------------------------------
+     Avatar
+     -------------------------------------------------------------------- */
+  .of-avatar{display:inline-flex;align-items:center;justify-content:center;border-radius:50%;background:var(--brand-500);color:var(--neutral-0);font-weight:500;flex-shrink:0;overflow:hidden}
+  .of-avatar img{width:100%;height:100%;object-fit:cover}
+  .of-avatar--xs{width:24px;height:24px;font-size:10px}
+  .of-avatar--sm{width:32px;height:32px;font-size:12px}
+  .of-avatar--md{width:40px;height:40px;font-size:14px}
+  .of-avatar--lg{width:56px;height:56px;font-size:18px}
+  .of-avatar-group{display:flex}
+  .of-avatar-group .of-avatar{border:2px solid var(--surface);margin-left:-10px}
+  .of-avatar-group .of-avatar:first-child{margin-left:0}
+</style>
+
+<div class="appbar">
+  <div class="appbar-inner">
+    <a class="appbar-brand" href="#top"><img src="assets/mark.png" alt=""><span>Overflow</span></a>
+    <nav class="appbar-nav">
+      <a href="#color">Cor</a>
+      <a href="#type">Tipografia</a>
+      <a href="#scales">Espaçamento</a>
+      <a href="#components">Componentes</a>
+      <a href="#logo">Logótipo</a>
+      <a href="#a11y">Acessibilidade</a>
+    </nav>
+    <button class="theme-toggle" id="themeToggle" type="button" aria-label="Alternar tema">
+      <span id="themeIcon" aria-hidden="true">◐</span>
+      <span id="themeLabel">Sistema</span>
+    </button>
+  </div>
+</div>
+
+<div class="wrap" id="top">
+
+  <section class="hero">
+    <div class="hero-grid">
+      <img class="hero-mark" src="assets/mark.png" alt="Marca Overflow">
+      <div>
+        <p class="eyebrow">Design system · v1.0</p>
+        <h1>Overflow</h1>
+        <p class="lead">O sistema de design da Overflow Software para os produtos internos — ERP, HRM e ferramentas de suporte construídos em Laravel + Inertia/React. Derivado diretamente do logótipo: navy <code>#1B3B8D</code> e azul <code>#2E5CA7</code>.</p>
+        <div class="chips">
+          <a class="chip" href="https://github.com/enxo-labs/os_erp" target="_blank" rel="noopener">Fonte: enxo-labs/os_erp</a>
+          <a class="chip outline" href="#components">Ver componentes</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel" id="color">
+    <div class="panel-head">
+      <p class="eyebrow">Cor</p>
+      <h2>A rampa da marca</h2>
+      <p>O primário é <code>brand-700</code> (<code>#1B3B8D</code>), tirado diretamente do fundo do logótipo. <code>brand-500</code> é o azul secundário do símbolo — nunca um preenchimento de botão, só links, ghost buttons e o estado de info.</p>
+    </div>
+    <div class="surface">
+      <div class="ramp" id="brandRamp"></div>
+      <div class="status-grid" id="statusGrid"></div>
+      <p class="demo-label" style="margin-top:var(--space-5)">Aliases semânticos — usar nos componentes, nunca os tons crus</p>
+      <div class="alias-grid" id="aliasGrid"></div>
+    </div>
+  </section>
+
+  <section class="panel" id="type">
+    <div class="panel-head">
+      <p class="eyebrow">Tipografia</p>
+      <h2>Inter, duas espessuras</h2>
+      <p>400 regular e 500 medium apenas — 600 e 700 ficam pesados contra o símbolo geométrico do logótipo. Sentence case em todo o lado: sem ALL CAPS em labels, sem title case em botões.</p>
+    </div>
+    <div class="surface">
+      <div class="type-row"><span class="meta">text-xs · 12px</span><span class="type-xs">Badges, legendas, metadados</span></div>
+      <div class="type-row"><span class="meta">text-sm · 13px</span><span class="type-sm">Corpo de alertas, texto de apoio, células de tabela</span></div>
+      <div class="type-row"><span class="meta">text-md · 14px / 500</span><span class="type-md">Botões, labels, corpo de texto por omissão</span></div>
+      <div class="type-row"><span class="meta">text-lg · 16px / 500</span><span class="type-lg">Botões grandes, parágrafos de introdução</span></div>
+      <div class="type-row"><span class="meta">text-xl · 20px / 500</span><span class="type-xl">Títulos de secção</span></div>
+    </div>
+  </section>
+
+  <section class="panel" id="scales">
+    <div class="panel-head">
+      <p class="eyebrow">Espaçamento e forma</p>
+      <h2>4 · 8 · 12 · 16 · 24 · 32</h2>
+      <p>Nada entre estes valores. Raio: <code>radius-sm</code> (6px) para controlos pequenos, <code>radius</code> (8px) para botões e inputs, <code>radius-lg</code> (12px) para cartões. Alertas são a exceção — raio 0.</p>
+    </div>
+    <div class="surface">
+      <div id="spacingScale"></div>
+      <div style="display:flex;gap:var(--space-5);margin-top:var(--space-5);flex-wrap:wrap">
+        <div style="text-align:center">
+          <div class="radius-demo" style="border-radius:6px;margin:0 auto 8px"></div>
+          <span class="meta" style="font-family:var(--font-mono);font-size:12px;color:var(--text-subtle)">radius-sm</span>
+        </div>
+        <div style="text-align:center">
+          <div class="radius-demo" style="border-radius:8px;margin:0 auto 8px"></div>
+          <span class="meta" style="font-family:var(--font-mono);font-size:12px;color:var(--text-subtle)">radius</span>
+        </div>
+        <div style="text-align:center">
+          <div class="radius-demo" style="border-radius:12px;margin:0 auto 8px"></div>
+          <span class="meta" style="font-family:var(--font-mono);font-size:12px;color:var(--text-subtle)">radius-lg</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel" id="components">
+    <div class="panel-head">
+      <p class="eyebrow">Componentes · React</p>
+      <h2>Button, Alert, Badge</h2>
+      <p>Renderizados ao vivo com React 18, a partir das mesmas classes <code>of-btn</code>, <code>of-alert</code> e <code>of-badge</code> do stylesheet de produção.</p>
+    </div>
+    <div class="surface">
+      <div id="root-components"></div>
+    </div>
+  </section>
+
+  <section class="panel" id="logo">
+    <div class="panel-head">
+      <p class="eyebrow">Logótipo</p>
+      <h2>O símbolo</h2>
+      <p>O losango é construído a partir de nós ligados por linhas — a letra <b>F</b>, um ícone de fluxo de dados, e a letra <b>O</b> — a origem visual do nome "OverFlow". Nunca recriar o símbolo; usar sempre os ficheiros oficiais.</p>
+    </div>
+    <div class="logo-grid">
+      <div class="logo-tile">
+        <div class="swatch-bg" style="background:#fff"><img src="assets/logo-navy.png" alt="Overflow — navy sobre branco"></div>
+        <div class="cap">Navy sobre branco — uso principal</div>
+      </div>
+      <div class="logo-tile">
+        <div class="swatch-bg" style="background:#1B3B8D"><img src="assets/logo-white.png" alt="Overflow — branco sobre navy"></div>
+        <div class="cap">Branco sobre navy — fundos escuros / de marca</div>
+      </div>
+      <div class="logo-tile">
+        <div class="swatch-bg" style="background:#fff"><img src="assets/mark.png" alt="Símbolo Overflow"></div>
+        <div class="cap">Símbolo isolado — favicons, avatares, tiles pequenos</div>
+      </div>
+    </div>
+    <div class="surface" style="margin-top:var(--space-4)">
+      <p class="demo-label" style="margin-bottom:var(--space-3)">Construção do símbolo</p>
+      <img src="assets/construction.jpg" alt="Diagrama de construção do símbolo Overflow: F + ícone de fluxo de dados + O" style="border-radius:var(--radius);border:1px solid var(--border)">
+    </div>
+  </section>
+
+  <section class="panel" id="a11y">
+    <div class="panel-head">
+      <p class="eyebrow">Acessibilidade</p>
+      <h2>Checklist</h2>
+    </div>
+    <div class="surface">
+      <ul class="check" id="a11yList"></ul>
+    </div>
+  </section>
+
+  <footer>
+    Documentação gerada a partir de <code>enxo-labs/os_erp</code> (<code>resources/css/overflow-design-system.css</code>) — 2026-09-21. Não é uma página oficial da Overflow Software.
+  </footer>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
+<script>
+(function(){
+  try{
+    var saved = localStorage.getItem('of-theme-preview');
+    if(saved === 'light' || saved === 'dark') document.documentElement.setAttribute('data-theme', saved);
+  }catch(e){}
+
+  function currentLabel(){
+    var t = document.documentElement.getAttribute('data-theme');
+    return t === 'dark' ? 'Escuro' : t === 'light' ? 'Claro' : 'Sistema';
+  }
+  var btn = document.getElementById('themeToggle');
+  var label = document.getElementById('themeLabel');
+  label.textContent = currentLabel();
+  btn.addEventListener('click', function(){
+    var t = document.documentElement.getAttribute('data-theme');
+    var next = t === 'dark' ? 'light' : t === 'light' ? null : 'dark';
+    if(next) document.documentElement.setAttribute('data-theme', next);
+    else document.documentElement.removeAttribute('data-theme');
+    try{ next ? localStorage.setItem('of-theme-preview', next) : localStorage.removeItem('of-theme-preview'); }catch(e){}
+    label.textContent = currentLabel();
+  });
+})();
+</script>
+<script>
+(function(){
+  var brandRamp = [
+    ['50','#EDF1FA','Fundos com tinta, linhas selecionadas'],
+    ['100','#C8D3EF','Fundos de badges'],
+    ['200','#9DAEE0','Acento em dark mode'],
+    ['300','#6C84CC','Focus ring em dark mode'],
+    ['400','#4A6BBE','Gráficos, ilustrações'],
+    ['500','#2E5CA7','Links, ghost, info'],
+    ['600','#244A8F','Texto sobre brand-50'],
+    ['700','#1B3B8D','Primário'],
+    ['800','#142C6B','Hover do primário'],
+    ['900','#0D1D47','Active do primário']
+  ];
+  var el = document.getElementById('brandRamp');
+  brandRamp.forEach(function(s){
+    var lum = ['50','100','200'].indexOf(s[0]) >= 0;
+    var d = document.createElement('div');
+    d.className = 'swatch';
+    d.style.background = s[1];
+    d.style.color = lum ? '#142C6B' : '#fff';
+    d.innerHTML = '<span><b>brand-'+s[0]+'</b>'+s[1]+'</span>';
+    d.title = s[2];
+    el.appendChild(d);
+  });
+
+  var statuses = [
+    ['Success', '#16A34A', '#E7F6EC', '#166534'],
+    ['Warning', '#F59E0B', '#FEF5E1', '#633806'],
+    ['Error',   '#DC2626', '#FDECEC', '#791F1F'],
+    ['Info',    '#2E5CA7', '#EDF1FA', '#244A8F']
+  ];
+  var sg = document.getElementById('statusGrid');
+  statuses.forEach(function(s){
+    var d = document.createElement('div');
+    d.className = 'status-card';
+    d.style.background = s[2];
+    d.style.color = s[3];
+    d.innerHTML = '<span class="dot" style="background:'+s[1]+'"></span><b>'+s[0]+'</b><br><span class="code" style="margin-top:6px;display:inline-block">'+s[1]+'</span>';
+    sg.appendChild(d);
+  });
+
+  var aliases = [
+    ['bg', 'var(--bg)'], ['surface', 'var(--surface)'], ['border', 'var(--border)'],
+    ['text', 'var(--text)'], ['text-muted', 'var(--text-muted)'], ['accent', 'var(--accent)']
+  ];
+  var ag = document.getElementById('aliasGrid');
+  aliases.forEach(function(a){
+    var d = document.createElement('div');
+    d.className = 'alias-card';
+    d.innerHTML = '<span class="alias-swatch" style="background:'+a[1]+'"></span><code>--of-'+a[0]+'</code>';
+    ag.appendChild(d);
+  });
+
+  var spacing = [['space-1','4px'],['space-2','8px'],['space-3','12px'],['space-4','16px'],['space-5','24px'],['space-6','32px']];
+  var ss = document.getElementById('spacingScale');
+  spacing.forEach(function(s){
+    var row = document.createElement('div');
+    row.className = 'scale-row';
+    row.innerHTML = '<span class="meta">'+s[0]+'</span><span class="bar" style="width:'+s[1]+'"></span><span class="code">'+s[1]+'</span>';
+    ss.appendChild(row);
+  });
+
+  var a11y = [
+    'Todos os elementos interativos têm um anel :focus-visible visível, com 2px de offset.',
+    'Botões apenas com ícone têm sempre aria-label.',
+    'Alvos de toque com pelo menos 40×40px — of-btn--sm só para dispositivos com ponteiro.',
+    'prefers-reduced-motion é respeitado: o spinner abranda, o transform de pressão é removido.',
+    'O texto do corpo cumpre WCAG AAA; nada fica abaixo de AA.'
+  ];
+  var list = document.getElementById('a11yList');
+  a11y.forEach(function(t){
+    var li = document.createElement('li');
+    li.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.4"/><path d="M5 8.2l1.8 1.8L11.2 5.8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg><span>'+t+'</span>';
+    list.appendChild(li);
+  });
+})();
+</script>
+<script>
+(function(){
+  var h = React.createElement;
+
+  function cx(){ return Array.prototype.slice.call(arguments).filter(Boolean).join(' '); }
+
+  function Button(props){
+    var variant = props.variant || 'primary';
+    var cls = cx('of-btn', 'of-btn--' + variant, props.size && 'of-btn--' + props.size, props.loading && 'of-btn--loading', props.icon && 'of-btn--icon', props.block && 'of-btn--block');
+    return h('button', { className: cls, disabled: props.disabled, 'aria-label': props['aria-label'] }, props.children);
+  }
+
+  var ICONS = {
+    info: h('svg', { viewBox: '0 0 18 18', fill: 'none', 'aria-hidden': 'true' },
+      h('circle', { cx: 9, cy: 9, r: 7.5, stroke: 'currentColor', strokeWidth: 1.5 }),
+      h('path', { d: 'M9 8v4.5M9 5.5v.01', stroke: 'currentColor', strokeWidth: 1.5, strokeLinecap: 'round' })),
+    success: h('svg', { viewBox: '0 0 18 18', fill: 'none', 'aria-hidden': 'true' },
+      h('circle', { cx: 9, cy: 9, r: 7.5, stroke: 'currentColor', strokeWidth: 1.5 }),
+      h('path', { d: 'M5.5 9.5l2.2 2.2 4.8-5', stroke: 'currentColor', strokeWidth: 1.5, strokeLinecap: 'round', strokeLinejoin: 'round' })),
+    warning: h('svg', { viewBox: '0 0 18 18', fill: 'none', 'aria-hidden': 'true' },
+      h('path', { d: 'M9 2.5l7.5 13h-15L9 2.5z', stroke: 'currentColor', strokeWidth: 1.5, strokeLinejoin: 'round' }),
+      h('path', { d: 'M9 7.5v3.5M9 13.5v.01', stroke: 'currentColor', strokeWidth: 1.5, strokeLinecap: 'round' })),
+    error: h('svg', { viewBox: '0 0 18 18', fill: 'none', 'aria-hidden': 'true' },
+      h('circle', { cx: 9, cy: 9, r: 7.5, stroke: 'currentColor', strokeWidth: 1.5 }),
+      h('path', { d: 'M6.5 6.5l5 5M11.5 6.5l-5 5', stroke: 'currentColor', strokeWidth: 1.5, strokeLinecap: 'round' }))
+  };
+
+  function Alert(props){
+    var variant = props.variant || 'info';
+    var role = (variant === 'error' || variant === 'warning') ? 'alert' : 'status';
+    return h('div', { className: cx('of-alert', 'of-alert--' + variant, props.toast && 'of-toast'), role: role, style: props.toast ? { maxWidth: 340 } : null },
+      h('span', { className: 'of-alert__icon' }, ICONS[variant]),
+      h('div', { className: 'of-alert__body' },
+        h('p', { className: 'of-alert__title' }, props.title),
+        props.text ? h('p', { className: 'of-alert__text' }, props.text) : null
+      ),
+      props.dismissible ? h('button', { className: 'of-alert__close', 'aria-label': 'Dispensar' }, '×') : null
+    );
+  }
+
+  function Badge(props){
+    return h('span', { className: cx('of-badge', 'of-badge--' + (props.variant || 'neutral')) }, props.children);
+  }
+
+  function Card(props){
+    return h('div', { className: 'of-card', style: { flex: '1 1 240px', maxWidth: 300 } },
+      props.gradient ? h('div', { className: 'of-card__img', style: { background: props.gradient } }) : null,
+      h('div', { className: 'of-card__body' },
+        h('h3', { className: 'of-card__title' }, props.title),
+        h('p', { className: 'of-card__text' }, props.text)
+      ),
+      props.footer ? h('div', { className: 'of-card__footer' }, props.footer) : null
+    );
+  }
+
+  var CheckIcon = h('svg', { viewBox: '0 0 12 12', fill: 'none' }, h('path', { d: 'M2 6.2l2.6 2.6L10 3', stroke: '#fff', strokeWidth: 1.8, strokeLinecap: 'round', strokeLinejoin: 'round' }));
+
+  function Check(props){
+    var kind = props.type || 'checkbox';
+    return h('label', { className: cx('of-check', 'of-check--' + kind) },
+      h('input', { type: kind, name: props.name, defaultChecked: props.defaultChecked }),
+      h('span', { className: 'of-check__box' }, kind === 'checkbox' ? CheckIcon : null),
+      props.children
+    );
+  }
+
+  function Switch(props){
+    return h('label', { className: 'of-switch' },
+      h('input', { type: 'checkbox', defaultChecked: props.defaultChecked }),
+      h('span', { className: 'of-switch__track' }, h('span', { className: 'of-switch__thumb' })),
+      props.children
+    );
+  }
+
+  function Field(props){
+    return h('div', { className: cx('of-field', props.invalid && 'of-field--invalid') },
+      h('label', { className: 'of-label' }, props.label),
+      props.control,
+      props.help ? h('span', { className: cx('of-help', props.invalid && 'of-help--error') }, props.help) : null
+    );
+  }
+
+  function Navbar(){
+    return h('div', { className: 'of-navbar' },
+      h('span', { className: 'of-navbar__brand' }, h('img', { src: 'assets/mark.png', alt: '', style: { height: 20, filter: 'brightness(0) invert(1)' } }), 'Overflow'),
+      h('div', { className: 'of-navbar__nav' },
+        h('a', { className: 'of-navbar__link of-navbar__link--active', href: '#' }, 'Painel'),
+        h('a', { className: 'of-navbar__link', href: '#' }, 'Projetos'),
+        h('a', { className: 'of-navbar__link', href: '#' }, 'Relatórios')
+      ),
+      h(Avatar, { initials: 'KC', size: 'sm' })
+    );
+  }
+
+  function Tabs(){
+    var _a = React.useState('geral'), tab = _a[0], setTab = _a[1];
+    var tabs = [['geral', 'Geral'], ['membros', 'Membros'], ['faturacao', 'Faturação']];
+    var content = { geral: 'Definições gerais do workspace: nome, fuso horário e idioma.', membros: '8 membros ativos, 2 convites pendentes.', faturacao: 'Plano Pro — próxima fatura a 1 de outubro.' };
+    return h('div', null,
+      h('div', { className: 'of-tabs__list', role: 'tablist' },
+        tabs.map(function(t){ return h('button', { key: t[0], className: 'of-tabs__tab', role: 'tab', 'aria-selected': tab === t[0], onClick: function(){ setTab(t[0]); } }, t[1]); })
+      ),
+      h('div', { className: 'of-tabs__panel', role: 'tabpanel' }, content[tab])
+    );
+  }
+
+  function Accordion(){
+    var _a = React.useState(0), open = _a[0], setOpen = _a[1];
+    var items = [
+      ['Como faço upgrade do plano?', 'Vai a Definições → Faturação e escolhe um plano superior. A cobrança é ajustada pro-rata.'],
+      ['Posso exportar os meus dados?', 'Sim, a qualquer momento em Definições → Exportar, em CSV ou JSON.'],
+      ['Como cancelo a subscrição?', 'Definições → Faturação → Cancelar. O acesso mantém-se até ao fim do período pago.']
+    ];
+    return h('div', { className: 'of-accordion' },
+      items.map(function(it, i){
+        var expanded = open === i;
+        return h('div', { className: 'of-accordion__item', key: i },
+          h('button', { className: 'of-accordion__trigger', 'aria-expanded': expanded, onClick: function(){ setOpen(expanded ? -1 : i); } },
+            it[0],
+            h('svg', { className: 'of-accordion__chevron', width: 16, height: 16, viewBox: '0 0 16 16', fill: 'none' }, h('path', { d: 'M4 6l4 4 4-4', stroke: 'currentColor', strokeWidth: 1.6, strokeLinecap: 'round', strokeLinejoin: 'round' }))
+          ),
+          expanded ? h('div', { className: 'of-accordion__panel' }, it[1]) : null
+        );
+      })
+    );
+  }
+
+  function ModalDemo(){
+    var _a = React.useState(true), open = _a[0], setOpen = _a[1];
+    return h('div', null,
+      !open ? h(Button, { variant: 'primary', onClick: function(){ setOpen(true); } }, 'Abrir modal') : null,
+      open ? h('div', { style: { position: 'relative', height: 260, border: '1px dashed var(--border-strong)', borderRadius: 'var(--radius-lg)' } },
+        h('div', { className: 'of-modal-backdrop' },
+          h('div', { className: 'of-modal' },
+            h('div', { className: 'of-modal__header' },
+              h('h3', { className: 'of-modal__title' }, 'Eliminar workspace'),
+              h('button', { className: 'of-alert__close', 'aria-label': 'Fechar', onClick: function(){ setOpen(false); } }, '×')
+            ),
+            h('div', { className: 'of-modal__body' }, 'Esta ação não pode ser desfeita. Todos os projetos e ficheiros serão eliminados permanentemente.'),
+            h('div', { className: 'of-modal__footer' },
+              h(Button, { variant: 'ghost', size: 'sm', onClick: function(){ setOpen(false); } }, 'Cancelar'),
+              h(Button, { variant: 'danger', size: 'sm', onClick: function(){ setOpen(false); } }, 'Eliminar')
+            )
+          )
+        )
+      ) : null
+    );
+  }
+
+  function Dropdown(){
+    var _a = React.useState(false), open = _a[0], setOpen = _a[1];
+    return h('div', { className: 'of-dropdown' },
+      h(Button, { variant: 'secondary', onClick: function(){ setOpen(!open); } }, 'Ações ', h('span', { 'aria-hidden': 'true' }, '▾')),
+      open ? h('div', { className: 'of-dropdown__menu' },
+        h('button', { className: 'of-dropdown__item' }, 'Duplicar'),
+        h('button', { className: 'of-dropdown__item' }, 'Arquivar'),
+        h('div', { className: 'of-dropdown__divider' }),
+        h('button', { className: 'of-dropdown__item of-dropdown__item--danger' }, 'Eliminar')
+      ) : null
+    );
+  }
+
+  function Tooltip(props){
+    return h('span', { className: 'of-tooltip', tabIndex: 0 },
+      props.children,
+      h('span', { className: 'of-tooltip__bubble', role: 'tooltip' }, props.label)
+    );
+  }
+
+  function Table(){
+    var rows = [
+      ['Ana Cumbana', 'ana@overflow.dev', 'Admin', 'success', 'Ativo'],
+      ['Bruno Silva', 'bruno@overflow.dev', 'Editor', 'success', 'Ativo'],
+      ['Carla Mendes', 'carla@overflow.dev', 'Leitor', 'warning', 'Convite pendente']
+    ];
+    return h('table', { className: 'of-table of-table--striped' },
+      h('thead', null, h('tr', null, h('th', null, 'Nome'), h('th', null, 'Email'), h('th', null, 'Função'), h('th', null, 'Estado'))),
+      h('tbody', null, rows.map(function(r){
+        return h('tr', { key: r[1] },
+          h('td', null, r[0]), h('td', null, r[1]), h('td', null, r[2]),
+          h('td', null, h(Badge, { variant: r[3] }, r[4]))
+        );
+      }))
+    );
+  }
+
+  function Pagination(){
+    var _a = React.useState(2), page = _a[0], setPage = _a[1];
+    var pages = [1, 2, 3, 4, 5];
+    return h('ul', { className: 'of-pagination' },
+      h('li', null, h('button', { className: 'of-pagination__link', disabled: page === 1, onClick: function(){ setPage(Math.max(1, page - 1)); } }, '‹')),
+      pages.map(function(p){ return h('li', { key: p }, h('button', { className: cx('of-pagination__link', p === page && 'of-pagination__link--active'), onClick: function(){ setPage(p); } }, p)); }),
+      h('li', null, h('button', { className: 'of-pagination__link', disabled: page === 5, onClick: function(){ setPage(Math.min(5, page + 1)); } }, '›'))
+    );
+  }
+
+  function Breadcrumb(){
+    return h('ul', { className: 'of-breadcrumb' },
+      h('li', null, h('a', { href: '#' }, 'Workspace')),
+      h('li', null, h('a', { href: '#' }, 'Projetos')),
+      h('li', null, 'Ranking de Competitividade')
+    );
+  }
+
+  function Progress(props){
+    return h('div', { className: 'of-progress' }, h('div', { className: cx('of-progress__bar', props.variant && 'of-progress__bar--' + props.variant), style: { width: props.value + '%' } }));
+  }
+
+  function Spinner(props){
+    return h('span', { className: cx('of-spinner', 'of-spinner--' + (props.size || 'md')), role: 'status', 'aria-label': 'A carregar' });
+  }
+
+  function Avatar(props){
+    var size = props.size || 'md';
+    return h('span', { className: cx('of-avatar', 'of-avatar--' + size), style: props.color ? { background: props.color } : null },
+      props.src ? h('img', { src: props.src, alt: props.alt || '' }) : props.initials
+    );
+  }
+
+  function ListGroup(){
+    return h('div', { className: 'of-list-group' },
+      h('a', { className: 'of-list-group__item of-list-group__item--active', href: '#' }, 'Painel geral'),
+      h('a', { className: 'of-list-group__item', href: '#' }, 'Membros da equipa'),
+      h('a', { className: 'of-list-group__item', href: '#' }, 'Integrações'),
+      h('a', { className: 'of-list-group__item', href: '#' }, 'Faturação')
+    );
+  }
+
+  function App(){
+    return h(React.Fragment, null,
+      h('p', { className: 'demo-label' }, 'Button — variantes'),
+      h('div', { className: 'demo-row' },
+        h(Button, { variant: 'primary' }, 'Criar projeto'),
+        h(Button, { variant: 'secondary' }, 'Guardar rascunho'),
+        h(Button, { variant: 'ghost' }, 'Cancelar'),
+        h(Button, { variant: 'danger' }, 'Eliminar workspace')
+      ),
+      h('p', { className: 'demo-label', style: { marginTop: 'var(--space-5)' } }, 'Tamanhos, estados e ícone'),
+      h('div', { className: 'demo-row' },
+        h(Button, { variant: 'primary', size: 'sm' }, 'Pequeno'),
+        h(Button, { variant: 'primary' }, 'Padrão'),
+        h(Button, { variant: 'primary', size: 'lg' }, 'Grande'),
+        h(Button, { variant: 'primary', disabled: true }, 'Desativado'),
+        h(Button, { variant: 'primary', loading: true }, 'A guardar'),
+        h(Button, { variant: 'ghost', icon: true, 'aria-label': 'Definições' },
+          h('svg', { width: 18, height: 18, viewBox: '0 0 18 18', fill: 'none', 'aria-hidden': 'true' },
+            h('circle', { cx: 9, cy: 9, r: 3, stroke: 'currentColor', strokeWidth: 1.5 }),
+            h('path', { d: 'M9 1.5v2M9 14.5v2M16.5 9h-2M3.5 9h-2', stroke: 'currentColor', strokeWidth: 1.5, strokeLinecap: 'round' })))
+      ),
+
+      h('div', { className: 'demo-card', style: { marginTop: 'var(--space-6)' } },
+        h('p', { className: 'demo-label' }, 'Alert — todas as variantes'),
+        h('div', { className: 'demo-col' },
+          h(Alert, { variant: 'info', title: 'Novo: exportação em massa', text: 'Já podes exportar uma lista filtrada como CSV a partir de qualquer tabela.' }),
+          h(Alert, { variant: 'success', title: 'Alterações guardadas' }),
+          h(Alert, { variant: 'warning', title: 'O teu trial termina em 3 dias' }),
+          h(Alert, { variant: 'error', title: 'Não foi possível ligar ao servidor', text: 'Verifica a tua ligação e tenta novamente.', dismissible: true }),
+          h(Alert, { variant: 'error', toast: true, title: 'Não foi possível carregar o ficheiro', text: 'Tem de ter menos de 25 MB.', dismissible: true })
+        )
+      ),
+
+      h('div', { className: 'demo-card' },
+        h('p', { className: 'demo-label' }, 'Badge — todas as variantes'),
+        h('div', { className: 'demo-row' },
+          h(Badge, { variant: 'success' }, 'Ativo'),
+          h(Badge, { variant: 'warning' }, 'Pendente'),
+          h(Badge, { variant: 'error' }, 'Falhou'),
+          h(Badge, { variant: 'brand' }, 'Pro'),
+          h(Badge, { variant: 'neutral' }, 'Rascunho')
+        )
+      ),
+
+      h('div', { className: 'demo-card' },
+        h('p', { className: 'demo-label' }, 'Card'),
+        h('div', { className: 'demo-row', style: { alignItems: 'stretch' } },
+          h(Card, {
+            gradient: 'linear-gradient(135deg, var(--brand-500), var(--brand-800))',
+            title: 'Relatório mensal',
+            text: 'Exporta os dados de faturação de setembro em CSV ou PDF.',
+            footer: [h(Button, { key: 'a', variant: 'primary', size: 'sm' }, 'Exportar'), h(Button, { key: 'b', variant: 'ghost', size: 'sm' }, 'Ver detalhes')]
+          }),
+          h(Card, {
+            gradient: 'linear-gradient(135deg, var(--success), var(--success-dark))',
+            title: 'Migração concluída',
+            text: '842 registos importados sem erros a partir do ERP antigo.',
+            footer: [h(Badge, { key: 'a', variant: 'success' }, 'Concluído')]
+          }),
+          h(Card, {
+            title: 'Sem imagem',
+            text: 'Um cartão também funciona só com texto — a imagem de topo é opcional, não obrigatória.',
+            footer: [h(Button, { key: 'a', variant: 'secondary', size: 'sm' }, 'Saber mais')]
+          })
+        )
+      ),
+
+      h('div', { className: 'demo-card' },
+        h('p', { className: 'demo-label' }, 'Form controls'),
+        h('div', { style: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 'var(--space-4)', maxWidth: 680 } },
+          h(Field, { label: 'Nome do projeto', control: h('input', { className: 'of-input', placeholder: 'Ranking 2026', id: 'demo-name' }), help: 'Visível para toda a equipa.' }),
+          h(Field, { label: 'Email', invalid: true, control: h('input', { className: 'of-input', defaultValue: 'ana@overflow', id: 'demo-email' }), help: 'Falta o domínio.' }),
+          h(Field, { label: 'Plano', control: h('select', { className: 'of-select', id: 'demo-plan' }, h('option', null, 'Starter'), h('option', null, 'Pro'), h('option', null, 'Enterprise')) }),
+          h(Field, { label: 'Notas', control: h('textarea', { className: 'of-textarea', placeholder: 'Contexto adicional…', id: 'demo-notes' }) })
+        ),
+        h('div', { className: 'demo-row', style: { marginTop: 'var(--space-4)' } },
+          h(Check, { type: 'checkbox', name: 'c1', defaultChecked: true }, 'Notificar por email'),
+          h(Check, { type: 'checkbox', name: 'c2' }, 'Notificar por Slack'),
+          h(Check, { type: 'radio', name: 'r1', defaultChecked: true }, 'Mensal'),
+          h(Check, { type: 'radio', name: 'r1' }, 'Anual'),
+          h(Switch, { defaultChecked: true }, 'Modo escuro por omissão')
+        )
+      ),
+
+      h('div', { className: 'demo-card' },
+        h('p', { className: 'demo-label' }, 'Navbar'),
+        h(Navbar)
+      ),
+
+      h('div', { className: 'demo-card' },
+        h('p', { className: 'demo-label' }, 'Tabs'),
+        h(Tabs)
+      ),
+
+      h('div', { className: 'demo-card' },
+        h('p', { className: 'demo-label' }, 'Accordion'),
+        h(Accordion)
+      ),
+
+      h('div', { className: 'demo-card' },
+        h('p', { className: 'demo-label' }, 'Modal'),
+        h(ModalDemo)
+      ),
+
+      h('div', { className: 'demo-card' },
+        h('p', { className: 'demo-label' }, 'Dropdown'),
+        h(Dropdown)
+      ),
+
+      h('div', { className: 'demo-card' },
+        h('p', { className: 'demo-label' }, 'Tooltip — passa o rato ou usa Tab'),
+        h('div', { className: 'demo-row' },
+          h(Tooltip, { label: 'Guarda as alterações' }, h(Button, { variant: 'secondary', size: 'sm' }, 'Guardar')),
+          h(Tooltip, { label: 'Ação irreversível' }, h(Button, { variant: 'danger', size: 'sm' }, 'Eliminar'))
+        )
+      ),
+
+      h('div', { className: 'demo-card' },
+        h('p', { className: 'demo-label' }, 'Table'),
+        h('div', { style: { overflowX: 'auto' } }, h(Table))
+      ),
+
+      h('div', { className: 'demo-card' },
+        h('p', { className: 'demo-label' }, 'Pagination'),
+        h(Pagination)
+      ),
+
+      h('div', { className: 'demo-card' },
+        h('p', { className: 'demo-label' }, 'Breadcrumb'),
+        h(Breadcrumb)
+      ),
+
+      h('div', { className: 'demo-card' },
+        h('p', { className: 'demo-label' }, 'Progress'),
+        h('div', { className: 'demo-col', style: { maxWidth: 320 } },
+          h(Progress, { value: 72 }),
+          h(Progress, { value: 100, variant: 'success' }),
+          h(Progress, { value: 40, variant: 'warning' }),
+          h(Progress, { value: 18, variant: 'error' })
+        )
+      ),
+
+      h('div', { className: 'demo-card' },
+        h('p', { className: 'demo-label' }, 'Spinner'),
+        h('div', { className: 'demo-row' },
+          h(Spinner, { size: 'sm' }), h(Spinner, { size: 'md' }), h(Spinner, { size: 'lg' })
+        )
+      ),
+
+      h('div', { className: 'demo-card' },
+        h('p', { className: 'demo-label' }, 'Avatar'),
+        h('div', { className: 'demo-row' },
+          h(Avatar, { size: 'xs', initials: 'KC' }), h(Avatar, { size: 'sm', initials: 'KC' }),
+          h(Avatar, { size: 'md', initials: 'KC' }), h(Avatar, { size: 'lg', initials: 'KC' }),
+          h('span', { className: 'of-avatar-group' },
+            h(Avatar, { size: 'md', initials: 'AC', color: 'var(--brand-500)' }),
+            h(Avatar, { size: 'md', initials: 'BS', color: 'var(--success)' }),
+            h(Avatar, { size: 'md', initials: 'CM', color: 'var(--warning)' })
+          )
+        )
+      ),
+
+      h('div', { className: 'demo-card' },
+        h('p', { className: 'demo-label' }, 'List group'),
+        h('div', { style: { maxWidth: 300 } }, h(ListGroup))
+      )
+    );
+  }
+
+  ReactDOM.createRoot(document.getElementById('root-components')).render(h(App));
+})();
+</script>
