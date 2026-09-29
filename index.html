@@ -449,6 +449,27 @@
   .of-avatar-group{display:flex}
   .of-avatar-group .of-avatar{border:2px solid var(--surface);margin-left:-10px}
   .of-avatar-group .of-avatar:first-child{margin-left:0}
+  /* Modo "Sistema" com o SO em escuro: os mesmos overrides de componentes
+     que [data-theme="dark"] (antes só os tokens mudavam, e botões/tabs
+     ficavam com as cores do tema claro sobre fundo escuro). */
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]) code, :root:not([data-theme="light"]) .code{color:var(--brand-200)}
+    :root:not([data-theme="light"]) .of-btn--primary{background-color:var(--brand-500)}
+    :root:not([data-theme="light"]) .of-btn--primary:hover:not(:disabled){background-color:var(--brand-400)}
+    :root:not([data-theme="light"]) .of-btn--secondary,:root:not([data-theme="light"]) .of-btn--ghost{color:var(--brand-200)}
+    :root:not([data-theme="light"]) .of-btn--secondary{border-color:var(--brand-400)}
+    :root:not([data-theme="light"]) .of-btn--secondary:hover:not(:disabled),
+    :root:not([data-theme="light"]) .of-btn--ghost:hover:not(:disabled){background-color:rgba(46,92,167,.18);color:var(--brand-100)}
+    :root:not([data-theme="light"]) .of-btn:disabled{background-color:#23262F;color:#5A6072}
+    :root:not([data-theme="light"]) .of-alert--info{background-color:#131C33;color:var(--brand-200)}
+    :root:not([data-theme="light"]) .of-alert--info .of-alert__title{color:var(--brand-100)}
+    :root:not([data-theme="light"]) .of-alert--success .of-alert__title{color:#B7EFCB}
+    :root:not([data-theme="light"]) .of-alert--warning .of-alert__title{color:#FBDCA0}
+    :root:not([data-theme="light"]) .of-alert--error .of-alert__title{color:#F7C1C1}
+    :root:not([data-theme="light"]) .of-input:focus,:root:not([data-theme="light"]) .of-textarea:focus,:root:not([data-theme="light"]) .of-select:focus{box-shadow:0 0 0 3px rgba(46,92,167,.35)}
+    :root:not([data-theme="light"]) .of-tabs__tab[aria-selected="true"]{color:var(--brand-200);border-bottom-color:var(--brand-200)}
+    :root:not([data-theme="light"]) .of-list-group__item--active{background:rgba(46,92,167,.16);color:var(--brand-100)}
+  }
 </style>
 
 <div class="appbar">
@@ -1081,8 +1102,8 @@
           h(Avatar, { size: 'md', initials: 'KC' }), h(Avatar, { size: 'lg', initials: 'KC' }),
           h('span', { className: 'of-avatar-group' },
             h(Avatar, { size: 'md', initials: 'AC', color: 'var(--brand-500)' }),
-            h(Avatar, { size: 'md', initials: 'BS', color: 'var(--success)' }),
-            h(Avatar, { size: 'md', initials: 'CM', color: 'var(--warning)' })
+            h(Avatar, { size: 'md', initials: 'BS', color: 'var(--success-dark)' }),
+            h(Avatar, { size: 'md', initials: 'CM', color: 'var(--warning-dark)' })
           )
         )
       ),
