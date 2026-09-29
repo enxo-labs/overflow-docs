@@ -706,7 +706,16 @@
   function Button(props){
     var variant = props.variant || 'primary';
     var cls = cx('of-btn', 'of-btn--' + variant, props.size && 'of-btn--' + props.size, props.loading && 'of-btn--loading', props.icon && 'of-btn--icon', props.block && 'of-btn--block');
-    return h('button', { className: cls, disabled: props.disabled, 'aria-label': props['aria-label'] }, props.children);
+    return h('button', {
+      type: props.type || 'button',
+      className: cls,
+      disabled: props.disabled,
+      onClick: props.onClick,
+      ref: props.buttonRef,
+      'aria-label': props['aria-label'],
+      'aria-haspopup': props['aria-haspopup'],
+      'aria-expanded': props['aria-expanded']
+    }, props.children);
   }
 
   var ICONS = {
@@ -848,13 +857,48 @@
 
   function Dropdown(){
     var _a = React.useState(false), open = _a[0], setOpen = _a[1];
-    return h('div', { className: 'of-dropdown' },
-      h(Button, { variant: 'secondary', onClick: function(){ setOpen(!open); } }, 'Ações ', h('span', { 'aria-hidden': 'true' }, '▾')),
-      open ? h('div', { className: 'of-dropdown__menu' },
-        h('button', { className: 'of-dropdown__item' }, 'Duplicar'),
-        h('button', { className: 'of-dropdown__item' }, 'Arquivar'),
-        h('div', { className: 'of-dropdown__divider' }),
-        h('button', { className: 'of-dropdown__item of-dropdown__item--danger' }, 'Eliminar')
+    var rootRef = React.useRef(null);
+    var triggerRef = React.useRef(null);
+
+    // Fecha ao clicar/tocar fora do menu ou com Escape (neste caso o foco
+    // volta ao trigger, para quem navega por teclado não o perder).
+    React.useEffect(function(){
+      if (!open) return;
+      function onPointerDown(e){
+        if (rootRef.current && !rootRef.current.contains(e.target)) setOpen(false);
+      }
+      function onKeyDown(e){
+        if (e.key === 'Escape') {
+          setOpen(false);
+          if (triggerRef.current) triggerRef.current.focus();
+        }
+      }
+      document.addEventListener('mousedown', onPointerDown);
+      document.addEventListener('touchstart', onPointerDown);
+      document.addEventListener('keydown', onKeyDown);
+      return function(){
+        document.removeEventListener('mousedown', onPointerDown);
+        document.removeEventListener('touchstart', onPointerDown);
+        document.removeEventListener('keydown', onKeyDown);
+      };
+    }, [open]);
+
+    function item(label, danger){
+      return h('button', {
+        type: 'button',
+        role: 'menuitem',
+        className: cx('of-dropdown__item', danger && 'of-dropdown__item--danger'),
+        onClick: function(){ setOpen(false); }
+      }, label);
+    }
+
+    return h('div', { className: 'of-dropdown', ref: rootRef },
+      h(Button, { variant: 'secondary', buttonRef: triggerRef, 'aria-haspopup': 'menu', 'aria-expanded': open, onClick: function(){ setOpen(!open); } }, 'Ações ', h('span', { 'aria-hidden': 'true' }, '▾')),
+      open ? h('div', { className: 'of-dropdown__menu', role: 'menu' },
+        item('Duplicar'),
+        item('Arquivar'),
+        h('div', { className: 'of-dropdown__divider', role: 'separator' }),
+        item('Eliminar', true)
       ) : null
     );
   }
