@@ -706,7 +706,16 @@
   function Button(props){
     var variant = props.variant || 'primary';
     var cls = cx('of-btn', 'of-btn--' + variant, props.size && 'of-btn--' + props.size, props.loading && 'of-btn--loading', props.icon && 'of-btn--icon', props.block && 'of-btn--block');
-    return h('button', { className: cls, disabled: props.disabled, 'aria-label': props['aria-label'] }, props.children);
+    return h('button', {
+      type: props.type || 'button',
+      className: cls,
+      disabled: props.disabled,
+      onClick: props.onClick,
+      ref: props.buttonRef,
+      'aria-label': props['aria-label'],
+      'aria-haspopup': props['aria-haspopup'],
+      'aria-expanded': props['aria-expanded']
+    }, props.children);
   }
 
   var ICONS = {
@@ -824,21 +833,52 @@
     );
   }
 
+  var FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
+
   function ModalDemo(){
     var _a = React.useState(true), open = _a[0], setOpen = _a[1];
+    var modalRef = React.useRef(null);
+    var triggerRef = React.useRef(null);
+    // A demo arranca aberta; só mexemos no foco depois de uma interação,
+    // para não saltar a página para aqui ao carregar.
+    var interacted = React.useRef(false);
+
+    function close(){ interacted.current = true; setOpen(false); }
+
+    React.useEffect(function(){
+      if (!interacted.current) return;
+      if (open) {
+        var first = modalRef.current && modalRef.current.querySelector(FOCUSABLE);
+        if (first) first.focus();
+      } else if (triggerRef.current) {
+        triggerRef.current.focus();
+      }
+    }, [open]);
+
+    // Prende o Tab dentro do diálogo e fecha com Escape.
+    function onKeyDown(e){
+      if (e.key === 'Escape') { e.stopPropagation(); close(); return; }
+      if (e.key !== 'Tab') return;
+      var items = modalRef.current.querySelectorAll(FOCUSABLE);
+      if (!items.length) return;
+      var first = items[0], last = items[items.length - 1];
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    }
+
     return h('div', null,
-      !open ? h(Button, { variant: 'primary', onClick: function(){ setOpen(true); } }, 'Abrir modal') : null,
+      !open ? h(Button, { variant: 'primary', buttonRef: triggerRef, 'aria-haspopup': 'dialog', onClick: function(){ interacted.current = true; setOpen(true); } }, 'Abrir modal') : null,
       open ? h('div', { style: { position: 'relative', height: 260, border: '1px dashed var(--border-strong)', borderRadius: 'var(--radius-lg)' } },
         h('div', { className: 'of-modal-backdrop' },
-          h('div', { className: 'of-modal' },
+          h('div', { className: 'of-modal', ref: modalRef, role: 'dialog', 'aria-modal': 'true', 'aria-labelledby': 'of-modal-demo-title', onKeyDown: onKeyDown },
             h('div', { className: 'of-modal__header' },
-              h('h3', { className: 'of-modal__title' }, 'Eliminar workspace'),
-              h('button', { className: 'of-alert__close', 'aria-label': 'Fechar', onClick: function(){ setOpen(false); } }, '×')
+              h('h3', { className: 'of-modal__title', id: 'of-modal-demo-title' }, 'Eliminar workspace'),
+              h('button', { type: 'button', className: 'of-alert__close', 'aria-label': 'Fechar', onClick: close }, '×')
             ),
             h('div', { className: 'of-modal__body' }, 'Esta ação não pode ser desfeita. Todos os projetos e ficheiros serão eliminados permanentemente.'),
             h('div', { className: 'of-modal__footer' },
-              h(Button, { variant: 'ghost', size: 'sm', onClick: function(){ setOpen(false); } }, 'Cancelar'),
-              h(Button, { variant: 'danger', size: 'sm', onClick: function(){ setOpen(false); } }, 'Eliminar')
+              h(Button, { variant: 'ghost', size: 'sm', onClick: close }, 'Cancelar'),
+              h(Button, { variant: 'danger', size: 'sm', onClick: close }, 'Eliminar')
             )
           )
         )
